@@ -161,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 item.addEventListener('click', (e) => {
                     e.stopPropagation();
                     
-                    // FIX: Mutually exclusive selection tracking safely handled across global body portals
                     panel.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('data-selected'));
                     item.classList.add('data-selected');
                     trigger.textContent = item.textContent;
@@ -222,20 +221,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === 'Enter') {
             e.preventDefault();
 
-            // Clear active typography states globally inside editor block
             document.execCommand('bold', false, null);
             document.execCommand('italic', false, null);
             document.execCommand('underline', false, null);
             document.execCommand('strikeThrough', false, null);
             document.execCommand('foreColor', false, '#1a1a1a');
-            document.execCommand('fontSize', false, '4'); // Resets to 14px default
+            document.execCommand('fontSize', false, '4'); 
 
-            // Inject clean paragraph line separation item safely 
             const selection = window.getSelection();
             if (selection.rangeCount) {
                 const range = selection.getRangeAt(0);
                 const br = document.createElement('br');
-                const textNode = document.createTextNode('\u200B'); // Zero-width space ensures selection visibility anchor
+                const textNode = document.createTextNode('\u200B'); 
                 
                 range.deleteContents();
                 range.insertNode(textNode);
@@ -247,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 selection.addRange(range);
             }
 
-            // Immediately dispatch layout updates back to active interface items
             synchronizeToolbarState();
             dom.textColorPicker.value = '#111111';
             syncCanvasBoundaries();
@@ -304,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         } else {
-            dom.editorTitleDisplay.textContent = 'New Note';
+            dom.editorTitleDisplay.textContent = 'Yeni Not';
             setDropdownSelectedValue('dropdown-paper-style', 'blank');
             setDropdownSelectedValue('dropdown-paper-color', 'cream');
             setDropdownSelectedValue('dropdown-font-size', '4'); 
@@ -334,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function buildDashboardNotesGrid() {
         const notes = getStoredNotebooksCollection();
         dom.notesGrid.innerHTML = '';
-        dom.notesCounter.textContent = `${notes.length} ${notes.length === 1 ? 'Note' : 'Notes'}`;
+        dom.notesCounter.textContent = `${notes.length} Not`;
 
         if (notes.length === 0) {
             dom.emptyState.classList.remove('hidden-element');
@@ -349,10 +345,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = note.textContent;
-            const plainPreviewText = tempDiv.textContent || tempDiv.innerText || 'No additional content';
+            const plainPreviewText = tempDiv.textContent || tempDiv.innerText || 'Ek içerik yok';
 
             card.innerHTML = `
-                <button class="note-card-delete-trigger" title="Delete Note">✕</button>
+                <button class="note-card-delete-trigger" title="Notu Sil">✕</button>
                 <div style="flex-grow:1; display:flex; flex-direction:column; overflow:hidden;">
                     <h3 class="note-card-title">${note.title}</h3>
                     <div class="note-card-preview">${plainPreviewText}</div>
@@ -363,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
             card.addEventListener('click', async (e) => {
                 if (e.target.classList.contains('note-card-delete-trigger')) {
                     e.stopPropagation();
-                    const confirmClear = await openMobileModalFrame('confirm', 'Delete Note', `Are you sure you want to delete "${note.title}"?`);
+                    const confirmClear = await openMobileModalFrame('confirm', 'Notu Sil', `"${note.title}" notunu silmek istediğinize emin misiniz?`);
                     if (confirmClear) {
                         let db = getStoredNotebooksCollection();
                         db = db.filter(n => n.id !== note.id);
@@ -383,12 +379,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // NOTE EDITOR LIFECYCLE SAVE TRANSACTIONS
     // ==========================================================================
     async function commitEditorStateToDatabase() {
-        const defaultPromptVal = dom.editorTitleDisplay.textContent === 'New Note' ? '' : dom.editorTitleDisplay.textContent;
-        const inputTitle = await openMobileModalFrame('prompt', 'Save Note', 'Enter a note title:', defaultPromptVal);
+        const defaultPromptVal = dom.editorTitleDisplay.textContent === 'Yeni Not' ? '' : dom.editorTitleDisplay.textContent;
+        const inputTitle = await openMobileModalFrame('prompt', 'Notu Kaydet', 'Not başlığını girin:', defaultPromptVal);
         
         if (inputTitle === null) return; 
         
-        const finalTitle = inputTitle.trim() === "" ? "New Note" : inputTitle.trim();
+        const finalTitle = inputTitle.trim() === "" ? "Yeni Not" : inputTitle.trim();
         
         const imagesDataTree = [];
         dom.objectLayer.querySelectorAll('.image-wrapper-node').forEach(node => {
@@ -398,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        const dateString = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        const dateString = new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'short', day: 'numeric' });
         let db = getStoredNotebooksCollection();
 
         if (state.activeEditingNoteId) {
@@ -422,7 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         saveNotebooksCollectionToStorage(db);
-        await openMobileModalFrame('alert', 'Success', 'Note saved successfully.');
+        await openMobileModalFrame('alert', 'Başarılı', 'Not başarıyla kaydedildi.');
         renderDashboardView();
     }
 
@@ -454,9 +450,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(syncCanvasBoundaries, 1200);
 
     function dismissScrollHint() {
-        if (dom.scrollHint.classList.contains('scroll-hint-visible')) {
+        if (dom.scrollHint && dom.scrollHint.classList.contains('scroll-hint-visible')) {
             dom.scrollHint.classList.remove('scroll-hint-visible');
-            setTimeout(() => dom.scrollHint.style.display = 'none', 400);
+            setTimeout(() => { if(dom.scrollHint) dom.scrollHint.style.display = 'none'; }, 400);
         }
     }
 
@@ -505,11 +501,43 @@ document.addEventListener("DOMContentLoaded", () => {
     dom.textEditor.addEventListener('input', syncCanvasBoundaries);
 
     // ==========================================================================
-    // SELECTION TEXT SNIFFER SYSTEM
+    // SELECTION TEXT SNIFFER SYSTEM & GESTURE SCROLL FILTER
     // ==========================================================================
     document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isScrollingGesture = false;
+
         btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isScrollingGesture = false;
+        }, { passive: true });
+
+        btn.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            if (Math.abs(touch.clientX - touchStartX) > 8 || Math.abs(touch.clientY - touchStartY) > 8) {
+                isScrollingGesture = true;
+            }
+        }, { passive: true });
+
+        btn.addEventListener('touchend', (e) => {
+            if (!isScrollingGesture) {
+                e.preventDefault(); 
+                const command = btn.getAttribute('data-command');
+                document.execCommand(command, false, null);
+                synchronizeToolbarState();
+                dom.textEditor.focus();
+            }
+        });
+
+        btn.addEventListener('click', (e) => {
+            if (isScrollingGesture) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
             const command = btn.getAttribute('data-command');
             document.execCommand(command, false, null);
             synchronizeToolbarState();
@@ -798,10 +826,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ==========================================================================
-    // FIX: RELIABLE EXCLUSIVE SELECTION & REAL-TIME PAGE RENDERING UPDATER
+    // RELIABLE EXCLUSIVE SELECTION & REAL-TIME PAGE RENDERING UPDATER
     // ==========================================================================
     function updateNotebookPaperStyling() {
-        // Read selected option from the active panel container (checks body portal or original container)
         const stylePanel = document.getElementById('dropdown-paper-style-panel') || document.querySelector('body > #dropdown-paper-style-panel');
         const colorPanel = document.getElementById('dropdown-paper-color-panel') || document.querySelector('body > #dropdown-paper-color-panel');
         
@@ -811,11 +838,31 @@ document.addEventListener("DOMContentLoaded", () => {
         state.paperStyle = selectedStyleItem ? selectedStyleItem.dataset.value : 'blank';
         state.paperTheme = selectedColorItem ? selectedColorItem.dataset.value : 'cream';
 
-        // Clear layout state attributes safely
         dom.container.className = '';
-        
-        // Re-inject updated styles to DOM structural frame node
         dom.container.classList.add(`paper-${state.paperStyle}`, `theme-${state.paperTheme}`);
+    }
+
+    // ==========================================================================
+    // NATIVE KEYBOARD ATTACHMENT POSITIONER (VISUAL VIEWPORT ENGINE)
+    // ==========================================================================
+    if (window.visualViewport) {
+        const handleVisualViewportChange = () => {
+            const toolbarWrapper = document.getElementById('mobile-toolbar-wrapper');
+            if (!toolbarWrapper || state.currentView !== 'editor') return;
+
+            const keyboardOffsetHeight = window.innerHeight - window.visualViewport.height;
+
+            if (keyboardOffsetHeight > 40) {
+                toolbarWrapper.style.position = 'fixed';
+                toolbarWrapper.style.bottom = `${keyboardOffsetHeight}px`;
+            } else {
+                toolbarWrapper.style.position = 'fixed';
+                toolbarWrapper.style.bottom = '0px';
+            }
+        };
+
+        window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+        window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
     }
 
     // ==========================================================================
@@ -824,7 +871,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dom.fabCreate.addEventListener('click', () => renderEditorWorkspace(null));
     
     dom.btnBack.addEventListener('click', async () => {
-        const confirmExit = await openMobileModalFrame('confirm', 'Discard Changes', "Return to home screen? Unsaved changes will be lost.");
+        const confirmExit = await openMobileModalFrame('confirm', 'Değişiklikleri Geri Al', "Ana ekrana dönmek istiyor musunuz? Kaydedilmemiş değişiklikler kaybolacaktır.");
         if (confirmExit) renderDashboardView();
     });
     
@@ -852,6 +899,51 @@ document.addEventListener("DOMContentLoaded", () => {
             document.execCommand('redo', false, null);
             synchronizeToolbarState();
         }
+    });
+
+    // ==========================================================================
+    // SENKRONİZE KOYU MOD / AÇIK MOD VE GEÇİŞ SİSTEMİ
+    // ==========================================================================
+    const globalThemeBtn = document.getElementById('btn-theme-toggle');
+    const editorThemeBtn = document.getElementById('btn-editor-theme-toggle');
+
+    function applySynchronizedTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if(globalThemeBtn) globalThemeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            if(editorThemeBtn) editorThemeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if(globalThemeBtn) globalThemeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            if(editorThemeBtn) editorThemeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+    }
+
+    function toggleThemeSharedLogic() {
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme);
+        applySynchronizedTheme(newTheme);
+    }
+
+    if (globalThemeBtn) globalThemeBtn.addEventListener('click', toggleThemeSharedLogic);
+    if (editorThemeBtn) editorThemeBtn.addEventListener('click', toggleThemeSharedLogic);
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applySynchronizedTheme(savedTheme);
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'theme') {
+            applySynchronizedTheme(e.newValue);
+        }
+    });
+
+    document.getElementById('btn-global-back')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 200);
     });
 
     // Boot Initialization Call
