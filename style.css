@@ -1,0 +1,468 @@
+/* ==========================================================================
+   RESET & SYSTEM STRUCTURAL HOOKS
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #141416;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+}
+
+.hidden-element {
+    display: none !important;
+}
+
+/* ==========================================================================
+   HOME DASHBOARD ("MY NOTES") VIEW STYLES
+   ========================================================================== */
+#home-dashboard-view {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #1c1c1e;
+    padding: 24px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-top: env(safe-area-inset-top);
+}
+
+.dashboard-header h1 {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.notes-count-badge {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #aeaeae;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 16px;
+}
+
+#empty-state-container {
+    text-align: center;
+    padding: 80px 20px;
+    color: #8e8e93;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+#notes-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    padding-bottom: 100px;
+}
+
+.note-card {
+    background-color: #2c2c2e;
+    border-radius: 16px;
+    padding: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 150px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.note-card:active {
+    transform: scale(0.97);
+    background-color: #3a3a3c;
+}
+
+.note-card-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 24px;
+}
+
+.note-card-preview {
+    color: #8e8e93;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    flex-grow: 1;
+    margin-bottom: 8px;
+}
+
+.note-card-preview * {
+    display: inline;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+
+.note-card-date {
+    color: #636366;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.note-card-delete-trigger {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    background-color: rgba(255, 69, 58, 0.15);
+    color: #ff453a;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: bold;
+    border: none;
+    z-index: 5;
+}
+
+#fab-create-note {
+    position: fixed;
+    bottom: calc(30px + env(safe-area-inset-bottom));
+    right: 24px;
+    width: 60px; height: 60px;
+    background-color: #0052cc;
+    color: #ffffff;
+    border-radius: 50%;
+    border: none;
+    font-size: 32px; font-weight: 300;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(0, 82, 204, 0.4);
+    z-index: 99;
+    transition: transform 0.2s;
+}
+#fab-create-note:active { transform: scale(0.92); }
+
+/* ==========================================================================
+   NOTE EDITOR INTEGRATED LAYER HEADERS
+   ========================================================================== */
+#note-editor-view {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    background-color: #141416;
+}
+
+#editor-header-actions {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background-color: #1c1c1e;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    padding-top: env(safe-area-inset-top);
+    z-index: 100;
+}
+
+.header-action-btn {
+    background: transparent;
+    border: none;
+    color: #0052cc;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 12px;
+}
+#btn-back-to-home { color: #8e8e93; }
+.primary-save-trigger {
+    background-color: #0052cc;
+    color: #ffffff !important;
+    border-radius: 8px;
+    padding: 6px 16px;
+}
+
+#editor-current-title {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 16px;
+    max-width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   DOCUMENT VIEWPORT LAYOUT WRAPPER 
+   ========================================================================== */
+#note-container {
+    position: absolute;
+    top: 60px;
+    left: 0; right: 0; bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 240px;
+    transition: background-color 0.25s ease;
+}
+
+#scroll-content { position: relative; width: 100%; min-height: 100%; }
+#paper-pattern-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; opacity: 0.25; }
+
+/* Palette Matrix Details */
+.theme-cream    { background-color: #F7EFE3; --line-color: #5a4f3f; }
+.theme-beige    { background-color: #EEDCC5; --line-color: #5c4b37; }
+.theme-gray     { background-color: #D6DBE1; --line-color: #3a414a; }
+.theme-blue     { background-color: #C1D3E8; --line-color: #2b3e54; }
+.theme-green    { background-color: #C6DECD; --line-color: #2d4535; }
+.theme-lavender { background-color: #DACFE6; --line-color: #443557; }
+.theme-pink     { background-color: #ECCED7; --line-color: #5c3541; }
+.theme-brown    { background-color: #D2BCA4; --line-color: #4c3721; }
+
+.paper-lines #paper-pattern-overlay { background-image: linear-gradient(var(--line-color) 1px, transparent 1px); background-size: 100% 28px; }
+.paper-grid #paper-pattern-overlay { background-image: linear-gradient(var(--line-color) 1px, transparent 1px), linear-gradient(90deg, var(--line-color) 1px, transparent 1px); background-size: 28px 28px; }
+.paper-dots #paper-pattern-overlay { background-image: radial-gradient(var(--line-color) 1.5px, transparent 1.5px); background-size: 24px 24px; }
+
+#text-editor {
+    position: relative; z-index: 1; width: 100%; min-height: 100vh; padding: 30px 24px;
+    font-size: 16px; line-height: 1.75; color: #1a1a1a; outline: none;
+    user-select: text; -webkit-user-select: text; word-wrap: break-word;
+}
+#text-editor[contenteditable="true"]:empty::before { content: attr(placeholder); color: #757575; font-style: italic; pointer-events: none; }
+#text-editor ul, #text-editor ol { padding-left: 28px; margin: 10px 0; }
+
+#drawing-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+#object-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+
+.image-wrapper-node { position: absolute; display: inline-block; border: 2px dashed transparent; padding: 4px; cursor: move; pointer-events: auto; touch-action: none; will-change: transform, width, height, top, left; }
+.image-wrapper-node.selected-node { border-color: #0052cc; background-color: rgba(0, 82, 204, 0.08); }
+.image-wrapper-node img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+
+.node-control-anchor { position: absolute; width: 32px; height: 32px; background-color: #0052cc; border: 2px solid #ffffff; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.35); display: none; z-index: 10; }
+.image-wrapper-node.selected-node .node-control-anchor { display: block; }
+.anchor-br { bottom: -14px; right: -14px; }
+.anchor-del { top: -14px; right: -14px; background-color: #d9251c; font-size: 14px; font-weight: bold; color: #ffffff; text-align: center; line-height: 28px; }
+
+/* ==========================================================================
+   MOBILE BOTTOM TOOLBAR FRAMEWORK
+   ========================================================================== */
+#mobile-toolbar-wrapper {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background-color: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    box-shadow: 0 -6px 35px rgba(0, 0, 0, 0.15);
+    border-radius: 24px 24px 0 0; z-index: 9999;
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex; flex-direction: column;
+}
+
+.scrollable-toolbar-row { display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; position: relative; }
+.scrollable-toolbar-row::-webkit-scrollbar { display: none; }
+
+/* FIX: Changed transparent white gradient overlay color match to prevent the white visual background clip block glitch */
+.scrollable-toolbar-row::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 24px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 5; }
+
+.toolbar-contextual-row { gap: 12px; padding: 12px 20px; border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+.toolbar-primary-row { justify-content: flex-start; gap: 12px; padding: 10px 20px; height: 64px; }
+
+#scroll-hint-pill {
+    position: absolute; top: -28px; right: 16px;
+    background-color: rgba(26, 26, 26, 0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 4px 10px; border-radius: 20px; pointer-events: none; z-index: 10000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: opacity 0.4s ease, transform 0.4s ease;
+    opacity: 0; transform: translateY(5px);
+}
+#scroll-hint-pill.scroll-hint-visible { opacity: 1; transform: translateY(0); }
+
+.tool-btn, .mode-btn, .action-btn { flex-shrink: 0; height: 44px; min-width: 44px; padding: 0 14px; border: none; background: transparent; border-radius: 12px; font-size: 14px; font-weight: 600; color: #333333; display: flex; align-items: center; justify-content: center; transition: all 0.2s cubic-bezier(0.2, 0, 0, 1); }
+.mode-btn { font-size: 15px; padding: 0 16px; background-color: rgba(0, 0, 0, 0.04); }
+.mode-btn.active-mode { background-color: #e6f0ff; color: #0052cc; }
+.tool-btn.toggle-active { background-color: #1a1a1a; color: #ffffff; }
+.toolbar-divider { width: 1px; height: 28px; background-color: rgba(0, 0, 0, 0.12); margin: 0 4px; flex-shrink: 0; }
+
+/* ==========================================================================
+   100% UNCLIPPED ESCAPED GLOBAL OVERLAY DROPDOWN PORTAL ENGINE
+   ========================================================================== */
+.custom-dropdown-upward {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.dropdown-trigger-btn {
+    height: 38px;
+    padding: 0 32px 0 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background-color: #ffffff;
+    color: #222222;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.dropdown-trigger-btn::after {
+    content: '▲';
+    font-size: 8px;
+    position: absolute;
+    right: 12px;
+    color: #666666;
+}
+
+.dropdown-menu-panel {
+    position: fixed; 
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.24), 0 4px 12px rgba(0,0,0,0.08);
+    display: none;
+    z-index: 2000000 !important; 
+    padding: 6px 0;
+    min-width: 160px;
+    max-height: 240px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+body > .dropdown-menu-panel {
+    display: block !important;
+}
+
+.dropdown-item {
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 550;
+    color: #333333;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.dropdown-item:active {
+    background-color: #f0f0f5;
+}
+
+.dropdown-item.data-selected {
+    color: #0052cc;
+    background-color: #e6f0ff;
+    font-weight: 700;
+}
+
+.color-picker-wrapper { position: relative; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 0 0 1.5px rgba(0,0,0,0.25); flex-shrink: 0; }
+.color-picker-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 60px; height: 60px; cursor: pointer; }
+.toolbar-slider { flex-grow: 1; min-width: 110px; height: 6px; background: #e0e0e0; border-radius: 3px; outline: none; accent-color: #0052cc; }
+.slider-label { font-size: 13px; color: #555555; font-weight: 700; }
+
+/* ==========================================================================
+   CUSTOM MOBILE DIALOG PLATFORM (ANDROID CORE DESIGNS)
+   ========================================================================== */
+#custom-dialog-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000000;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+#custom-dialog-overlay.dialog-active-frame {
+    opacity: 1;
+}
+
+.native-dialog-box {
+    background-color: #2c2c2e;
+    width: 100%;
+    max-width: 320px;
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    transform: scale(0.85);
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+#custom-dialog-overlay.dialog-active-frame .native-dialog-box {
+    transform: scale(1);
+}
+
+#dialog-box-title {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+#dialog-box-message {
+    color: #a1a1a6;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+}
+
+#dialog-input-wrapper {
+    margin-bottom: 20px;
+}
+
+#dialog-text-input {
+    width: 100%;
+    height: 48px;
+    background-color: #1c1c1e;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 0 16px;
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+}
+#dialog-text-input:focus {
+    border-color: #0052cc;
+}
+
+.dialog-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.dialog-ui-btn {
+    background: transparent;
+    border: none;
+    color: #0052cc;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 10px;
+}
+.dialog-ui-btn:active {
+    background-color: rgba(255,255,255,0.05);
+}
+
+.dialog-ui-btn.confirmation-accent {
+    color: #34c759;
+}

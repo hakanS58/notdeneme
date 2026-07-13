@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Premium Mobile Note Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="home-dashboard-view">
+        <header class="dashboard-header">
+            <h1>My Notes</h1>
+            <span class="notes-count-badge" id="notes-counter">0 Notes</span>
+        </header>
+        
+        <div id="empty-state-container" class="hidden-element">
+            <div class="empty-icon">📝</div>
+            <p>No notes yet. Tap the button below to create one!</p>
+        </div>
+
+        <div id="notes-grid-container"></div>
+
+        <button id="fab-create-note" title="Create New Note">+</button>
+    </div>
+
+    <div id="note-editor-view" class="hidden-element">
+        
+        <div id="editor-header-actions">
+            <button class="header-action-btn" id="btn-back-to-home">➔ Back</button>
+            <div id="editor-current-title">New Note</div>
+            <button class="header-action-btn primary-save-trigger" id="btn-save-note">Save</button>
+        </div>
+
+        <div id="note-container" class="paper-blank theme-cream">
+            <div id="paper-pattern-overlay"></div>
+            <div id="scroll-content">
+                <div id="text-editor" contenteditable="true" placeholder="Tap anywhere to start writing..."></div>
+                
+                <canvas id="drawing-canvas"></canvas>
+                
+                <div id="object-layer"></div>
+            </div>
+        </div>
+
+        <input type="file" id="image-loader" accept="image/*" style="display: none;">
+
+        <div id="mobile-toolbar-wrapper">
+            
+            <div id="scroll-hint-pill" class="scroll-hint-visible">Swipe ➔</div>
+
+            <div class="toolbar-contextual-row scrollable-toolbar-row" id="text-formatting-bar">
+                <div class="custom-dropdown-upward" id="dropdown-font-size">
+                    <div class="dropdown-trigger-btn" id="fs-trigger">14px</div>
+                    <div class="dropdown-menu-panel" id="dropdown-font-size-panel">
+                        <div class="dropdown-item" data-value="2">10px</div>
+                        <div class="dropdown-item" data-value="3">12px</div>
+                        <div class="dropdown-item data-selected" data-value="4">14px</div>
+                        <div class="dropdown-item" data-value="5">16px</div>
+                        <div class="dropdown-item" data-value="6">18px</div>
+                        <div class="dropdown-item" data-value="7">20px</div>
+                        <div class="dropdown-item" data-value="8">24px</div>
+                        <div class="dropdown-item" data-value="9">28px</div>
+                        <div class="dropdown-item" data-value="10">32px</div>
+                    </div>
+                </div>
+                
+                <div class="color-picker-wrapper">
+                    <input type="color" id="text-color-picker" value="#111111">
+                </div>
+
+                <button class="tool-btn" id="btn-bold" data-command="bold"><b>B</b></button>
+                <button class="tool-btn" id="btn-italic" data-command="italic"><i>I</i></button>
+                <button class="tool-btn" id="btn-underline" data-command="underline"><u>U</u></button>
+                <button class="tool-btn" id="btn-strike" data-command="strikeThrough"><s>S</s></button>
+                <button class="tool-btn" id="btn-list-bullet" data-command="insertUnorderedList">• List</button>
+                <button class="tool-btn" id="btn-list-ordered" data-command="insertOrderedList">1. List</button>
+                <button class="tool-btn" id="btn-align-left" data-command="justifyLeft">⬅</button>
+                <button class="tool-btn" id="btn-align-center" data-command="justifyCenter">⬌</button>
+                <button class="tool-btn" id="btn-align-right" data-command="justifyRight">➡</button>
+            </div>
+
+            <div class="toolbar-contextual-row scrollable-toolbar-row" id="drawing-settings-bar" style="display: none;">
+                <span class="slider-label">Width:</span>
+                <input type="range" id="pen-weight" min="2" max="30" value="5" class="toolbar-slider">
+                
+                <div class="color-picker-wrapper">
+                    <input type="color" id="pen-color-picker" value="#0052cc">
+                </div>
+                
+                <button class="tool-btn toggle-active" id="btn-draw-pen">Ref Pen</button>
+                <button class="tool-btn" id="btn-draw-eraser">🧽 Eraser</button>
+                <button class="tool-btn" id="btn-draw-clear">🗑️ Clear</button>
+            </div>
+
+            <div class="toolbar-contextual-row scrollable-toolbar-row" id="page-settings-bar" style="display: none;">
+                <div class="custom-dropdown-upward" id="dropdown-paper-style">
+                    <div class="dropdown-trigger-btn" id="ps-trigger">Blank</div>
+                    <div class="dropdown-menu-panel" id="dropdown-paper-style-panel">
+                        <div class="dropdown-item data-selected" data-value="blank">Blank</div>
+                        <div class="dropdown-item" data-value="lines">Horizontal Lines</div>
+                        <div class="dropdown-item" data-value="grid">Grid</div>
+                        <div class="dropdown-item" data-value="dots">Dot Grid</div>
+                    </div>
+                </div>
+                <div class="custom-dropdown-upward" id="dropdown-paper-color">
+                    <div class="dropdown-trigger-btn" id="pc-trigger">Warm Cream</div>
+                    <div class="dropdown-menu-panel" id="dropdown-paper-color-panel">
+                        <div class="dropdown-item data-selected" data-value="cream">Warm Cream</div>
+                        <div class="dropdown-item" data-value="beige">Warm Beige</div>
+                        <div class="dropdown-item" data-value="gray">Soft Gray</div>
+                        <div class="dropdown-item" data-value="blue">Muted Blue</div>
+                        <div class="dropdown-item" data-value="green">Sage Green</div>
+                        <div class="dropdown-item" data-value="lavender">Lavender</div>
+                        <div class="dropdown-item" data-value="pink">Dusty Pink</div>
+                        <div class="dropdown-item" data-value="brown">Light Brown</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-primary-row scrollable-toolbar-row">
+                <button class="mode-btn active-mode" id="mode-text">📝 Text</button>
+                <button class="mode-btn" id="mode-draw">🎨 Draw</button>
+                <button class="mode-btn" id="btn-insert-image">🖼️ +Image</button>
+                <button class="mode-btn" id="mode-page">📄 Page</button>
+                <div class="toolbar-divider"></div>
+                <button class="action-btn" id="btn-undo" title="Undo">↩</button>
+                <button class="action-btn" id="btn-redo" title="Redo">↪</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-dialog-overlay" class="hidden-element">
+        <div class="native-dialog-box">
+            <h3 id="dialog-box-title">Confirm Operation</h3>
+            <p id="dialog-box-message">Are you sure you want to proceed?</p>
+            <div id="dialog-input-wrapper" class="hidden-element">
+                <input type="text" id="dialog-text-input" placeholder="Enter text here...">
+            </div>
+            <div class="dialog-actions-row">
+                <button id="dialog-btn-cancel" class="dialog-ui-btn">Cancel</button>
+                <button id="dialog-btn-confirm" class="dialog-ui-btn confirmation-accent">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
