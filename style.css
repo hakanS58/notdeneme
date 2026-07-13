@@ -466,3 +466,107 @@ body > .dropdown-menu-panel {
 .dialog-ui-btn.confirmation-accent {
     color: #34c759;
 }
+
+
+/* ==========================================================================
+   TEMA VE GEÇİŞ DEĞİŞKENLERİ ENTEGRASYONU
+   ========================================================================== */
+:root {
+    --bg-main: #f8fafc;
+    --bg-surface: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --color-purple: #818cf8;
+}
+
+[data-theme="dark"] {
+    --bg-main: #0b0f19;
+    --bg-surface: #111827;
+    --border-color: #1f2937;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+}
+
+/* Sayfa Geçiş Animasyonları */
+body.fade-in {
+    opacity: 0;
+    animation: pageFadeIn 0.25s ease-out forwards;
+}
+
+body.fade-out {
+    opacity: 1;
+    animation: pageFadeOut 0.2s ease-in forwards;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: scale(0.99); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pageFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* ==========================================================================
+   RESET & SYSTEM STRUCTURAL HOOKS
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-main); /* Dinamik tema rengi */
+    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+.hidden-element {
+    display: none !important;
+}
+
+/* ==========================================================================
+   HOME DASHBOARD ("MY NOTES") VIEW STYLES
+   ========================================================================== */
+#home-dashboard-view {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-surface); /* Dinamik tema rengi */
+    padding: 24px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-header h1 {
+    color: var(--text-primary);
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+#editor-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+}
+
+#editor-current-title {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+}
