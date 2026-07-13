@@ -1,41 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Premium Mobile Note Editor</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Nodax Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style/noteditorstyle.css">
 </head>
-<body>
+<body class="fade-in">
 
     <div id="home-dashboard-view">
         <header class="dashboard-header">
-            <h1>My Notes</h1>
-            <span class="notes-count-badge" id="notes-counter">0 Notes</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button id="btn-global-back" onclick="window.location.href='index.html'" style="background: none; border: none; color: var(--text-primary); font-size: 20px; cursor: pointer; padding: 0 4px;"><i class="fa-solid fa-chevron-left"></i></button>
+                <h1><b>Nodax Notes</b></h1>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="notes-count-badge" id="notes-counter">0 Not</span>
+                <button id="btn-theme-toggle" class="theme-btn" style="background: none; border: none; color: var(--text-primary); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-moon"></i></button>
+            </div>
         </header>
         
         <div id="empty-state-container" class="hidden-element">
             <div class="empty-icon">📝</div>
-            <p>No notes yet. Tap the button below to create one!</p>
+            <p>Henüz not yok. Yeni bir tane oluşturmak için aşağıdaki butona dokunun!</p>
         </div>
 
         <div id="notes-grid-container"></div>
 
-        <button id="fab-create-note" title="Create New Note">+</button>
+        <button id="fab-create-note" title="Yeni Not Oluştur">+</button>
     </div>
 
     <div id="note-editor-view" class="hidden-element">
         
         <div id="editor-header-actions">
-            <button class="header-action-btn" id="btn-back-to-home">➔ Back</button>
-            <div id="editor-current-title">New Note</div>
-            <button class="header-action-btn primary-save-trigger" id="btn-save-note">Save</button>
+            <button class="header-action-btn" id="btn-back-to-home"><i class="fa-solid fa-chevron-left"></i> Geri</button>
+            <div id="editor-current-title">Yeni Not</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <button id="btn-editor-theme-toggle" style="background: none; border: none; color: var(--text-primary); font-size: 18px; cursor: pointer;"><i class="fa-solid fa-moon"></i></button>
+                <button class="header-action-btn primary-save-trigger" id="btn-save-note">Kaydet</button>
+            </div>
         </div>
 
         <div id="note-container" class="paper-blank theme-cream">
             <div id="paper-pattern-overlay"></div>
             <div id="scroll-content">
-                <div id="text-editor" contenteditable="true" placeholder="Tap anywhere to start writing..."></div>
+                <div id="text-editor" contenteditable="true" placeholder="Yazmaya başlamak için herhangi bir yere dokunun..."></div>
                 
                 <canvas id="drawing-canvas"></canvas>
                 
@@ -47,7 +57,7 @@
 
         <div id="mobile-toolbar-wrapper">
             
-            <div id="scroll-hint-pill" class="scroll-hint-visible">Swipe ➔</div>
+            <div id="scroll-hint-pill" class="scroll-hint-visible">Kaydır ➔</div>
 
             <div class="toolbar-contextual-row scrollable-toolbar-row" id="text-formatting-bar">
                 <div class="custom-dropdown-upward" id="dropdown-font-size">
@@ -69,81 +79,81 @@
                     <input type="color" id="text-color-picker" value="#111111">
                 </div>
 
-                <button class="tool-btn" id="btn-bold" data-command="bold"><b>B</b></button>
-                <button class="tool-btn" id="btn-italic" data-command="italic"><i>I</i></button>
-                <button class="tool-btn" id="btn-underline" data-command="underline"><u>U</u></button>
-                <button class="tool-btn" id="btn-strike" data-command="strikeThrough"><s>S</s></button>
-                <button class="tool-btn" id="btn-list-bullet" data-command="insertUnorderedList">• List</button>
-                <button class="tool-btn" id="btn-list-ordered" data-command="insertOrderedList">1. List</button>
+                <button class="tool-btn" id="btn-bold" data-command="bold"><b>K</b></button>
+                <button class="tool-btn" id="btn-italic" data-command="italic"><i>T</i></button>
+                <button class="tool-btn" id="btn-underline" data-command="underline"><u>A</u></button>
+                <button class="tool-btn" id="btn-strike" data-command="strikeThrough"><s>Ü</s></button>
+                <button class="tool-btn" id="btn-list-bullet" data-command="insertUnorderedList">• Liste</button>
+                <button class="tool-btn" id="btn-list-ordered" data-command="insertOrderedList">1. Liste</button>
                 <button class="tool-btn" id="btn-align-left" data-command="justifyLeft">⬅</button>
                 <button class="tool-btn" id="btn-align-center" data-command="justifyCenter">⬌</button>
                 <button class="tool-btn" id="btn-align-right" data-command="justifyRight">➡</button>
             </div>
 
             <div class="toolbar-contextual-row scrollable-toolbar-row" id="drawing-settings-bar" style="display: none;">
-                <span class="slider-label">Width:</span>
+                <span class="slider-label">Kalınlık:</span>
                 <input type="range" id="pen-weight" min="2" max="30" value="5" class="toolbar-slider">
                 
                 <div class="color-picker-wrapper">
                     <input type="color" id="pen-color-picker" value="#0052cc">
                 </div>
                 
-                <button class="tool-btn toggle-active" id="btn-draw-pen">Ref Pen</button>
-                <button class="tool-btn" id="btn-draw-eraser">🧽 Eraser</button>
-                <button class="tool-btn" id="btn-draw-clear">🗑️ Clear</button>
+                <button class="tool-btn toggle-active" id="btn-draw-pen">Kalem</button>
+                <button class="tool-btn" id="btn-draw-eraser">🧽 Silgi</button>
+                <button class="tool-btn" id="btn-draw-clear">🗑️ Temizle</button>
             </div>
 
             <div class="toolbar-contextual-row scrollable-toolbar-row" id="page-settings-bar" style="display: none;">
                 <div class="custom-dropdown-upward" id="dropdown-paper-style">
-                    <div class="dropdown-trigger-btn" id="ps-trigger">Blank</div>
+                    <div class="dropdown-trigger-btn" id="ps-trigger">Düz</div>
                     <div class="dropdown-menu-panel" id="dropdown-paper-style-panel">
-                        <div class="dropdown-item data-selected" data-value="blank">Blank</div>
-                        <div class="dropdown-item" data-value="lines">Horizontal Lines</div>
-                        <div class="dropdown-item" data-value="grid">Grid</div>
-                        <div class="dropdown-item" data-value="dots">Dot Grid</div>
+                        <div class="dropdown-item data-selected" data-value="blank">Düz</div>
+                        <div class="dropdown-item" data-value="lines">Çizgili</div>
+                        <div class="dropdown-item" data-value="grid">Kareli</div>
+                        <div class="dropdown-item" data-value="dots">Noktalı</div>
                     </div>
                 </div>
                 <div class="custom-dropdown-upward" id="dropdown-paper-color">
-                    <div class="dropdown-trigger-btn" id="pc-trigger">Warm Cream</div>
+                    <div class="dropdown-trigger-btn" id="pc-trigger">Sıcak Krem</div>
                     <div class="dropdown-menu-panel" id="dropdown-paper-color-panel">
-                        <div class="dropdown-item data-selected" data-value="cream">Warm Cream</div>
-                        <div class="dropdown-item" data-value="beige">Warm Beige</div>
-                        <div class="dropdown-item" data-value="gray">Soft Gray</div>
-                        <div class="dropdown-item" data-value="blue">Muted Blue</div>
-                        <div class="dropdown-item" data-value="green">Sage Green</div>
-                        <div class="dropdown-item" data-value="lavender">Lavender</div>
-                        <div class="dropdown-item" data-value="pink">Dusty Pink</div>
-                        <div class="dropdown-item" data-value="brown">Light Brown</div>
+                        <div class="dropdown-item data-selected" data-value="cream">Sıcak Krem</div>
+                        <div class="dropdown-item" data-value="beige">Sıcak Bej</div>
+                        <div class="dropdown-item" data-value="gray">Açık Gri</div>
+                        <div class="dropdown-item" data-value="blue">Mat Mavi</div>
+                        <div class="dropdown-item" data-value="green">Adaçayı Yeşili</div>
+                        <div class="dropdown-item" data-value="lavender">Lavanta</div>
+                        <div class="dropdown-item" data-value="pink">Pudra Pembe</div>
+                        <div class="dropdown-item" data-value="brown">Açık Kahve</div>
                     </div>
                 </div>
             </div>
 
             <div class="toolbar-primary-row scrollable-toolbar-row">
-                <button class="mode-btn active-mode" id="mode-text">📝 Text</button>
-                <button class="mode-btn" id="mode-draw">🎨 Draw</button>
-                <button class="mode-btn" id="btn-insert-image">🖼️ +Image</button>
-                <button class="mode-btn" id="mode-page">📄 Page</button>
+                <button class="mode-btn active-mode" id="mode-text">📝 Metin</button>
+                <button class="mode-btn" id="mode-draw">🎨 Çizim</button>
+                <button class="mode-btn" id="btn-insert-image">🖼️ +Görsel</button>
+                <button class="mode-btn" id="mode-page">📄 Sayfa</button>
                 <div class="toolbar-divider"></div>
-                <button class="action-btn" id="btn-undo" title="Undo">↩</button>
-                <button class="action-btn" id="btn-redo" title="Redo">↪</button>
+                <button class="action-btn" id="btn-undo" title="Geri Al">↩</button>
+                <button class="action-btn" id="btn-redo" title="İleri Al">↪</button>
             </div>
         </div>
     </div>
 
     <div id="custom-dialog-overlay" class="hidden-element">
         <div class="native-dialog-box">
-            <h3 id="dialog-box-title">Confirm Operation</h3>
-            <p id="dialog-box-message">Are you sure you want to proceed?</p>
+            <h3 id="dialog-box-title">İşlemi Onayla</h3>
+            <p id="dialog-box-message">Devam etmek istediğinize emin misiniz?</p>
             <div id="dialog-input-wrapper" class="hidden-element">
-                <input type="text" id="dialog-text-input" placeholder="Enter text here...">
+                <input type="text" id="dialog-text-input" placeholder="Metni buraya girin...">
             </div>
             <div class="dialog-actions-row">
-                <button id="dialog-btn-cancel" class="dialog-ui-btn">Cancel</button>
-                <button id="dialog-btn-confirm" class="dialog-ui-btn confirmation-accent">Confirm</button>
+                <button id="dialog-btn-cancel" class="dialog-ui-btn">İptal</button>
+                <button id="dialog-btn-confirm" class="dialog-ui-btn confirmation-accent">Onayla</button>
             </div>
         </div>
     </div>
 
-  <script src="script.js"></script>
+  <script src="script/noteditorscript.js"></script>
 </body>
 </html>
